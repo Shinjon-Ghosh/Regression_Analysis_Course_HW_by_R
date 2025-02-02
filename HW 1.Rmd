@@ -1,0 +1,107 @@
+---
+title: "R for HW 1"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+homework 1 
+```{r}
+rm(list = ls())
+# 1.21
+X<-c(1,0,2,0,3,1,0,1,2,0)
+Y<-c(16,9,17,12,22,13,8,15,19,11)
+
+data <- data.frame(X, Y)
+slr<-lm(Y ~ X, data = data)
+summary(slr)
+
+slr$coefficients
+slr$residuals
+slr$effects
+slr$rank
+slr$fitted.values
+slr$model
+
+plot(data, pch = 16, col = "blue")
+abline(slr)
+
+10.2000  +4*1 
+
+10.2000  +4* mean(X)
+mean(Y)
+
+### 1.25 
+
+e<-Y-(10.2000  +4* X)
+e
+slr$residuals
+
+sum(e^2)
+MSE<-sum(e^2)/(10-2)
+MSE
+
+#1.38 
+
+e1<-Y-(9 +3* X)
+Q1<-sum(e1^2)
+Q1
+
+e2<-Y-(11  +5* X)
+Q2<-sum(e2^2)
+Q2
+
+plot(slr)
+
+
+```
+
+
+```{r}
+rm(list = ls())
+n <- 500 # sampie size of each training set
+n_sim <- 1 # number of rounds of simuiation (an important parameter!) 
+x0 <- 0.8 # predictor vaiue of interest
+df.test <- data.frame(x = x0) # test set of one observation
+pred <- matrix(NA, nrow = n_sim, ncol = 5)
+bias<- Var<- test.error<- rep(NA, 5)
+set.seed(99)
+for (k in 1:n_sim) {
+# simuiate the training set of n observations for each round 
+x <- runif(n)
+e <- rnorm(n, sd = 0.5)
+y <- x^2 + e # true modeL is quadratic
+df.train <- data.frame(x, y)
+# fit the five Linear modeis to the training set
+model.0 <- lm(y ~ 1, data= df.train) 
+model.1 <- lm(y ~ x, data= df.train) 
+model.2 <- lm(y~poly(x, 2), data= df.train) 
+model.4 <- lm(y~poly(x, 4), data= df.train) 
+model.8 <- lm(y~poly(x, 8), data=df.train) 
+# calcuiate the predicted vaiue for each linear modei
+pred[k, 1] <- predict(model.0, newdata = df.test)
+pred[k, 2] <- predict(model.1, newdata = df.test)
+pred[k, 3] <- predict(model.2, newdata = df.test)
+pred[k, 4] <- predict(model.4, newdata = df.test)
+pred[k, 5] <- predict(model.8,newdata = df.test)
+
+}
+
+
+plot(model.0)
+plot(model.1)
+plot(model.2)
+
+y0<- x0^2+ rnorm(n_sim, sd = 0.5) # random target of prediction
+
+
+pred.all <- c(pred[, 1], pred[, 2], pred[, 3], pred[, 4], pred[, 5])
+degree<- as.factor(rep(c(0, 1, 2, 4, 8), each= n_sim))
+dat <- data.frame(degree, pred.all)
+
+
+```

@@ -1,0 +1,190 @@
+---
+title: "HW 2"
+author: "Shinjon Ghosh"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+---
+
+Problem 2.29 a
+
+```{r}
+ # Data for X and Y
+  xi <- c(43, 41, 47, 46, 45, 41, 47, 41, 48, 48, 42, 47, 43, 44, 42, 55, 57, 56, 59, 57, 54, 53, 52, 53, 54, 60, 59, 51, 59, 57, 68, 63, 60, 63, 63, 64, 66, 65, 60, 65, 65, 69, 61, 70, 68, 78, 78, 78, 72, 70, 73, 76, 78, 78, 71, 75, 77, 76, 72, 76)
+  yi <- c(106, 106, 97, 113, 96, 119, 92, 112, 92, 102, 107, 107, 102, 115, 101, 87, 91, 97, 82, 78, 95, 98, 94, 96, 100, 84, 70, 104, 76, 93, 73, 73, 76, 80, 84, 71, 64, 88, 79, 88, 73, 74, 76, 87, 70, 69, 54, 62, 78, 65, 64, 74, 87, 63, 82, 80, 52, 56, 70, 74)
+  
+  # Fit the linear regression model
+  model <- lm(yi ~ xi)
+  
+  # Predicted values
+  y_hat <- predict(model)
+  
+  # Mean of the response variable
+  y_bar <- mean(yi)
+  
+  # Residuals (Yi - Y_hat)
+  residuals <- yi - y_hat
+  
+  # Deviations (Y_hat - Y_bar)
+  deviations <- y_hat - y_bar
+  
+  # First plot: Residuals
+  plot(xi, residuals, main="Residuals (Yi - Y_hat) vs Xi", xlab="Xi", ylab="Residuals (Yi - Y_hat)", col="blue", pch=19)
+  abline(h=0, col="red", lty=2)  # Adding a horizontal line at zero
+  
+  # Second plot: Deviations
+  plot(xi, deviations, main="Deviations (Y_hat - Y_bar) vs Xi", xlab="Xi", ylab="Deviations (Y_hat - Y_bar)", col="green", pch=19)
+  abline(h=0, col="red", lty=2)  # Adding a horizontal line at zero
+  
+```
+
+Interpretation From the plot it can be seen that the deviation plot shows larger deviation plot shows larger deviations than the residual plot signifying that SSR is larger, which implies that R\^2 is higher, in other words R\^2 is closer to 1.
+
+```{r}
+ # Compute SST, SSR, and SSE
+  SST <- sum((yi - y_bar)^2)              # Total Sum of Squares
+  SSR <- sum((y_hat - y_bar)^2)            # Sum of Squares due to Regression
+  SSE <- sum((yi - y_hat)^2)               # Sum of Squared Errors
+  
+  # Print the results
+  cat("SST =", SST, "\n")
+  cat("SSR =", SSR, "\n")
+  cat("SSE =", SSE, "\n")
+  
+  ## ANOVA Table
+  anova(model)
+
+```
+
+problem 3.5 a
+
+```{r}
+# Data for the number of transfers (Xi)
+  transfers <- c(16, 0, 2, 0, 3, 1, 0, 15, 2, 0)
+  
+# Load ggplot2 package
+  library(ggplot2)
+  
+  # Convert the data into a data frame for plotting
+  df <- data.frame(transfers)
+  
+  # Create the dot plot using ggplot2
+  ggplot(df, aes(x = transfers)) +
+    geom_dotplot(binwidth = 1, method = "dotdensity", fill = "blue") +
+    labs(title = "Dot Plot of Number of Transfers (Xi)",
+         x = "Number of Transfers (Xi)",
+         y = "Count") +
+    theme_minimal()
+  
+```
+
+Problem 3.5b
+
+```{r}
+ # Data for the number of transfers (Xi)
+  transfers <- c(16, 0, 2, 0, 3, 1, 0, 15, 2, 0)
+  
+  # Generate the case numbers (time points) corresponding to each transfer
+  time <- 1:length(transfers)
+  
+  # Create a data frame for the time series plot
+  df <- data.frame(time, transfers)
+  
+  # Load required package for plotting
+  # install.packages("ggplot2") # Uncomment if you don't have the package
+  
+  # Load ggplot2 package
+  library(ggplot2)
+  
+  # Create the time plot
+  ggplot(df, aes(x = time, y = transfers)) +
+    geom_line(color = "blue") + # Line connecting the points
+    geom_point(color = "red", size = 3) + # Points for each transfer value
+    labs(title = "Time Plot of Number of Transfers",
+         x = "Time (Order of Cases)",
+         y = "Number of Transfers (Xi)") +
+    theme_minimal()
+```
+
+Problem 3.5c
+
+```{r}
+ # Data for the number of transfers (Xi) and number of broken ampules (Yi)
+  transfers <- c(16, 0, 2, 0, 3, 1, 0, 15, 2, 0)
+  broken_ampules <- c(9, 17, 2, 12, 22, 13, 8, 15, 19, 11)
+  
+  # Create a data frame
+  df <- data.frame(transfers, broken_ampules)
+  
+  # Fit a linear regression model: Yi = b0 + b1 * Xi
+  model <- lm(broken_ampules ~ transfers, data = df)
+  
+  # Obtain the residuals
+  residuals <- model$residuals
+  
+  # Print the residuals
+  print(residuals)
+  
+  # Create a stem-and-leaf plot for the residuals
+  stem(residuals)
+```
+
+Problem 3.5 d
+
+```{r}
+# Data for the number of transfers (Xi) and number of broken ampules (Yi)
+  transfers <- c(16, 0, 2, 0, 3, 1, 0, 15, 2, 0)
+  broken_ampules <- c(9, 17, 2, 12, 22, 13, 8, 15, 19, 11)
+  
+  # Create a data frame
+  df <- data.frame(transfers, broken_ampules)
+  
+  # Fit a linear regression model: Yi = b0 + b1 * Xi
+  model <- lm(broken_ampules ~ transfers, data = df)
+  
+  # Obtain the residuals
+  residuals <- model$residuals
+  
+  # Plot the residuals against the predictor variable (Xi)
+  plot(df$transfers, residuals,
+       main = "Residuals vs. Number of Transfers (Xi)",
+       xlab = "Number of Transfers (Xi)",
+       ylab = "Residuals",
+       pch = 19, col = "blue")
+  abline(h = 0, col = "red", lwd = 2) # Add a horizontal line at 0
+```
+
+Interpretation From the residual plot it can be seen that pattern indicates some increasing and decreasing points, hence the model is not linear.
+
+Problem 3.5f
+
+```{r}
+ # Data for the number of transfers (Xi) and number of broken ampules (Yi)
+  transfers <- c(16, 0, 2, 0, 3, 1, 0, 15, 2, 0)
+  broken_ampules <- c(9, 17, 2, 12, 22, 13, 8, 15, 19, 11)
+  
+  # Create a data frame
+  df <- data.frame(transfers, broken_ampules)
+  
+  # Fit a linear regression model: Yi = b0 + b1 * Xi
+  model <- lm(broken_ampules ~ transfers, data = df)
+  
+  # Obtain the residuals
+  residuals <- model$residuals
+  
+  # Generate a time variable (since the cases are given in time order)
+  time <- 1:length(residuals)
+  
+  # Create a data frame that includes time and residuals
+  df_time <- data.frame(time, residuals)
+  
+  # Plot the residuals over time
+  plot(df_time$time, df_time$residuals,
+       type = "b", # "b" means both points and lines
+       main = "Time Plot of Residuals",
+       xlab = "Time (Order of Cases)",
+       ylab = "Residuals",
+       pch = 19, col = "blue",
+       lwd = 2)
+  abline(h = 0, col = "red", lwd = 2) # Add a horizontal line at 0
+```

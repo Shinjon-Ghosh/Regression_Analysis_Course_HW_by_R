@@ -1,0 +1,467 @@
+---
+title: "MAT 353 Home Work 7"
+author: "Shinjon Ghosh"
+date: "`r Sys.Date()`"
+output: word_document
+---
+Problem 10.10 a)
+Loading data
+
+```{r}
+# Read a CSV file into R
+Book5 <- read.csv("Book4.csv", header = TRUE)
+
+# Display the first few rows of the data
+head(data)
+
+Book3 <- read.csv("Book3.csv", header = TRUE)
+
+# Display the first few rows of the data
+head(data)
+
+
+Book1 <- read.csv("Book1.csv", header = TRUE)
+
+# Display the first few rows of the data
+head(data)
+```
+
+```{r}
+# Fit a linear model
+model <- lm(Y ~ X1 + X2 + X3, data = Book3)
+
+# Calculate studentized residuals
+studentized_residuals <- rstandard(model)
+
+# Print studentized residuals
+print(studentized_residuals)
+```
+
+```{r}
+
+# Calculate Cook's distance
+cooks_d <- cooks.distance(model)
+
+# Print Cook's distance values
+print(cooks_d)
+
+# Optional: Plot Cook's distance to visually identify influential points
+plot(cooks_d, type = "h", main = "Cook's Distance", ylab = "Cook's Distance")
+abline(h = 4 / length(cooks_d), col = "red", lty = 2) # Suggested threshold line
+```
+
+b)
+```{r}
+# Assuming you have a dataset and a model
+# Define X as the matrix of predictors including a column of 1s for the intercept
+X <- model.matrix(~ X1 + X2 +X3, data = Book3) # Replace with your variables
+
+# Calculate (X'X)^(-1)
+xtx_inv <- solve(t(X) %*% X)
+
+# Print the result
+print(xtx_inv)
+
+```
+
+```{r}
+##defining new observation G
+# Example matrix X
+G <- matrix(c(1, 300000, 7.2, 0), nrow = 4, byrow = TRUE)
+
+# Calculate (G'G)^(-1)
+gtg_inv <- solve(t(G) %*% G)
+
+# Print the result
+print(gtg_inv)
+
+```
+
+d
+```{r}
+
+# Define the cases you want to analyze
+cases_x_outliers <- c(16, 22, 43, 48)
+cases_y_outliers <- c(10, 32, 38, 40)
+all_cases <- c(cases_x_outliers, cases_y_outliers)
+
+# Calculate DFFITS for all cases
+dffits_values <- dffits(model)[all_cases]
+print("DFFITS values:")
+print(dffits_values)
+
+# Calculate DFBETAS for all predictors and cases
+dfbetas_values <- dfbetas(model)[all_cases, ]
+print("DFBETAS values:")
+print(dfbetas_values)
+
+# Calculate Cook's distance for all cases
+cooks_distance_values <- cooks.distance(model)[all_cases]
+print("Cook's Distance values:")
+print(cooks_distance_values)
+```
+
+These are the values for the DEFFITS, DFBETAS and COOK's Distance.
+
+e
+```{r}
+# Fit the initial linear model
+model_full <- lm(Y ~ X1 + X2 + X3, data = Book3)
+
+# Calculate fitted values from the full model
+fitted_full <- fitted(model_full)
+
+# Define the cases to remove
+cases_to_remove <- c(16, 22, 43, 48, 10, 32, 38, 40)
+
+# Remove specified cases
+dataset_reduced <- Book3[-cases_to_remove, ]
+
+# Fit the model again without the specified cases
+model_reduced <- lm(Y ~ X1 + X2 + X3,  data = dataset_reduced)
+
+# Calculate fitted values from the reduced model
+fitted_reduced <- fitted(model_reduced)
+
+# Calculate the average absolute percent difference in fitted values
+# First, we need to make sure both fitted values are of the same length
+# Extract fitted values only for the cases that were removed
+fitted_removed <- fitted_full[cases_to_remove]
+
+# Calculate absolute percent difference
+percent_diff <- abs(fitted_removed - fitted_reduced) / abs(fitted_removed) * 100
+
+# Calculate the average of the absolute percent differences
+average_abs_percent_diff <- mean(percent_diff, na.rm = TRUE)
+
+# Print the result
+cat("Average Absolute Percent Difference in Fitted Values:", average_abs_percent_diff, "%\n")
+```
+
+Problem 10.11
+a
+```{r}
+# Fit a linear model
+model1 <- lm(y ~ x1 + x2 + x3, data = Book5)
+
+# Calculate studentized residuals
+studentized_residuals1 <- rstandard(model1)
+
+# Print studentized residuals
+print(studentized_residuals1)
+```
+
+
+```{r}
+
+# Calculate Cook's distance
+cooks_d1 <- cooks.distance(model1)
+
+# Print Cook's distance values
+print(cooks_d1)
+
+# Optional: Plot Cook's distance to visually identify influential points
+plot(cooks_d1, type = "h", main = "Cook's Distance", ylab = "Cook's Distance")
+abline(h = 4 / length(cooks_d1), col = "red", lty = 2) # Suggested threshold line
+```
+
+b
+```{r}
+# Assuming you have a dataset and a model
+# Define X as the matrix of predictors including a column of 1s for the intercept
+X1 <- model.matrix(~ x1 + x2 +x3, data = Book5) # Replace with your variables
+
+# Calculate (X'X)^(-1)
+xtx_inv1 <- solve(t(X1) %*% X1)
+
+# Print the result
+print(xtx_inv1)
+```
+The results above is the hat matrix.
+
+d
+```{r}
+# Define the cases you want to analyze
+cases_x_outlier <- c(11, 17, 27)
+
+all_case <- c(cases_x_outlier)
+
+# Calculate DFFITS for all cases
+dffits_value <- dffits(model1)[all_case]
+print("DFFITS values:")
+print(dffits_value)
+
+# Calculate DFBETAS for all predictors and cases
+dfbetas_value <- dfbetas(model1)[all_case, ]
+print("DFBETAS values:")
+print(dfbetas_value)
+
+# Calculate Cook's distance for all cases
+cooks_distance_value <- cooks.distance(model1)[all_case]
+print("Cook's Distance values:")
+print(cooks_distance_value)
+```
+The results above shows the dffits, dffbeta, and cook's distance of the outlying cases 11, 17, 27.
+
+
+Problem 10.17 a
+```{r}
+library(corrplot)
+# Scatter plot matrix
+pairs(Book5, main = "Scatter Plot Matrix")
+# Calculate the correlation matrix
+cor_matrix <- cor(Book5)
+
+# Display the correlation matrix
+print(cor_matrix)
+
+# Visualize the correlation matrix
+corrplot(cor_matrix, method = "circle", type = "upper", 
+         tl.col = "black", tl.srt = 45, 
+         title = "Correlation Matrix", mar = c(0,0,1,0))
+```
+ Interpretation
+From the correlaton matrix it can be seen that the regressors are highly correlated with the dependent variable y as their values are around -0.6 and above which indicates a negative linear relationship amongst the regressors and the dependent variable. However, the regressors x1 and x2 values are about 0.5 which shows that there might exist somewhat correlation amongst them but it is relative low and can be neglected. Furthermore, the correlation between x2 and x3 is about 0.7 which indicates strong presence of collinearity that needs to be addressed.
+
+b
+```{r}
+library(car)
+# Introduce multicollinearity
+Book5$x4 <- Book5$x1   # x4 is highly correlated with x1
+
+# Fit the linear model
+model2 <- lm(x1 ~ x2 + x3 + x4, data = Book5)
+
+# Calculate VIF
+vif_values <- vif(model2)
+
+# Print VIF values
+print(vif_values)
+```
+From the r output we have the following VIF values x1 = 1.632296, x2 = 2.003235, x3 = 2.009062.From the output it confirms from the correlation matrix that x2 and x3 are highly correlated.
+
+Problem 10.21 a
+```{r}
+# Introduce multicollinearity
+Book1$x5 <- Book1$x1   # x4 is highly correlated with x1
+
+# Fit the linear model
+model3 <- lm(x1 ~ x2 + x3 + x5, data = Book1)
+
+# Calculate VIF
+vif_values1 <- vif(model3)
+
+# Print VIF values
+print(vif_values1)
+```
+From the r output we have the following VIF values x1 = 1.304608, x2 = 1.300377, x3 = 1.023997.From the output it suggest that x1 and x2 are highly correlated with each other and even x3 is also fairly correlated. Hence we can conclude that the regressors are highly correlated.
+
+
+b
+```{r}
+# Introduce some correlation
+Book1$x4 <- 0.5 * Book1$x1 
+
+# Fit the linear model
+model6 <- lm(x1 ~ x2 + x3 + x4, data = Book1)
+
+# Obtain residuals and predicted values
+residuals1 <- residuals(model6)
+predicted_values1 <- fitted(model6)
+
+# Set up the plotting area for 4 plots
+par(mfrow=c(2, 2))
+
+# Plot residuals against predicted values
+plot(predicted_values1, residuals1,
+     main = "Residuals vs Predicted Values",
+     xlab = "Predicted Values",
+     ylab = "Residuals",
+     pch = 19, col = "blue")
+abline(h = 0, col = "red")
+
+# Plot residuals against x2
+plot(Book1$x2, residuals1,
+     main = "Residuals vs x2",
+     xlab = "x2",
+     ylab = "Residuals",
+     pch = 19, col = "blue")
+abline(h = 0, col = "red")
+
+# Plot residuals against x3
+plot(Book1$x1, residuals1,
+     main = "Residuals vs x3",
+     xlab = "x3",
+     ylab = "Residuals",
+     pch = 19, col = "blue")
+abline(h = 0, col = "red")
+
+# Plot residuals against x4
+plot(Book1$x4, residuals1,
+     main = "Residuals vs x4",
+     xlab = "x4",
+     ylab = "Residuals",
+     pch = 19, col = "blue")
+abline(h = 0, col = "red")
+
+# Normal probability plot of residuals
+par(mfrow=c(1, 1)) # Reset plotting area to single plot
+qqnorm(residuals1, main = "Normal Q-Q Plot of Residuals")
+qqline(residuals1, col = "red")
+```
+
+Interpretation
+From the Q-Q plot of residuals it can be said that the data set is residuals are approximately normal since majority of the observation lies on the straight line.
+
+
+c
+```{r}
+## fit a new model
+model7 <- lm(y~x1+x2+x3, data = Book1)
+# Generate added-variable plots
+avPlots(model7, terms = ~ x1 + x2 + x3, main = "Added-Variable Plots")
+
+# Added-variable plot for X1
+avPlot(model7, variable = "x1", main = "Added-Variable Plot for x1")
+
+# Added-variable plot for X2
+avPlot(model7, variable = "x2", main = "Added-Variable Plot for x2")
+
+# Added-variable plot for X3
+avPlot(model7, variable = "x3", main = "Added-Variable Plot for x3")
+
+```
+d
+Yes they suggest that the plot needs to be modified.
+
+
+Problem 10.22 a
+```{r}
+# Assuming the data frame is named `data`
+# Transform the response and predictor variables
+Book1$log_y <- log(Book1$y)
+Book1$log_x1 <- log(Book1$x1)
+Book1$log_x3 <- log(Book1$x3)
+Book1$log_140_minus_x2 <- log(140 - Book1$x2)
+
+# Fit the regression model
+model10 <- lm(log_y ~ log_x1 + log_140_minus_x2 + log_x3, data = Book1)
+
+# Display the summary of the fitted model
+summary(model10)
+```
+Interpretation 
+From the R output we have the model to be Y = -2.04269 - 0.71195x1' + 0.74736x2'+ 0.75745x3'.
+
+b
+```{r}
+# Obtain residuals and predicted values
+residuals10 <- resid(model10)
+predicted_values10 <- fitted(model10)
+
+# Set up the plotting area for 4 plots
+par(mfrow = c(2, 2))
+
+# Plot residuals against predicted values
+plot(predicted_values10, residuals10,
+     main = "Residuals vs Predicted Values",
+     xlab = "Predicted Values",
+     ylab = "Residuals",
+     pch = 19, col = "blue")
+abline(h = 0, col = "red")
+
+# Plot residuals against log_X1
+plot(Book1$log_x1, residuals10,
+     main = "Residuals vs log(x1)",
+     xlab = "log(x1)",
+     ylab = "Residuals",
+     pch = 19, col = "blue")
+abline(h = 0, col = "red")
+
+# Plot residuals against log_140_minus_X2
+plot(Book1$log_140_minus_x2, residuals10,
+     main = "Residuals vs log(140 - x2)",
+     xlab = "log(140 - x2)",
+     ylab = "Residuals",
+     pch = 19, col = "blue")
+abline(h = 0, col = "red")
+
+# Plot residuals against log_X3
+plot(Book1$log_x3, residuals10,
+     main = "Residuals vs log(x3)",
+     xlab = "log(x3)",
+     ylab = "Residuals",
+     pch = 19, col = "blue")
+abline(h = 0, col = "red")
+
+```
+
+From this plot the problem looks better than the first part but the situation isnt entirely solved.
+
+c
+```{r}
+# Calculate VIF
+vif_values10 <- vif(model10)
+
+# Display VIF values
+vif_values10
+```
+Interpretation
+From the r output we have the following VIF values log_x1 = 1.339318, log_140_x2 = 1.330109, x3 = 1.016032.From the output it suggest that x1 and x2 are highly correlated with each other and even x3 is also fairly correlated. Hence we can conclude that the regressors are highly correlated.
+
+d
+```{r}
+# Calculate studentized deleted residuals
+studentized_residuals10 <- rstudent(model10)
+
+# Display studentized residuals
+studentized_residuals10
+```
+The values above are the studentized residuals, we compare these values with the bonferroni values t(.9985; 28) = 3.25. If |ti| ≤ 3.25 conclude no outliers, otherwise outliers, conclude presence of outliers.
+
+e
+```{r}
+# Calculate the diagonal elements of the hat matrix (leverage values)
+leverage_values10 <- hatvalues(model10)
+
+# Display leverage values
+leverage_values10
+```
+The values above are the leverage values, we compare these values with the rule of thumb value say t If |ti| ≤ t conclude no outliers, otherwise outliers, conclude presence of outliers.
+
+
+f
+```{r}
+# Calculate DFFITS for all cases
+dffits_values10 <- dffits(model10)
+
+# Calculate DFBETAS for all cases
+dfbetas_values10 <- dfbetas(model10)
+
+# Calculate Cook's Distance for all cases
+cooks_distance_values10 <- cooks.distance(model10)
+
+# Specify cases of interest
+cases <- c(28, 29)
+```
+ Deffits vlues 
+```{r}
+# Extract DFFITS values for Cases 28 and 29
+dffits_values10[cases]
+```
+
+Debeta values
+```{r}
+# Extract DFBETAS values for Cases 28 and 29
+dfbetas_values10[cases, ]
+
+```
+
+Cook Distance Values
+```{r}
+
+# Extract Cook's Distance values for Cases 28 and 29
+cooks_distance_values10[cases]
+```
+
+

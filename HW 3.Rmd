@@ -1,0 +1,347 @@
+---
+title: "MAT 353 - HW3"
+author: "Shinjon Ghosh"
+date: '`r Sys.Date()`'
+output: word_document
+---
+```{r}
+library(lmtest)
+
+```
+
+Problem 3.4 a
+```{r}
+# Data for the number of copiers serviced (Xi)
+xi <- c(20, 60, 46, 41, 12, 137, 68, 89, 4, 32, 144, 156, 93, 36, 72, 100, 105, 131, 
+        127, 57, 66, 101, 109, 74, 134, 112, 18, 73, 111, 96, 123, 90, 20, 28, 3, 57, 
+        86, 132, 112, 27, 131, 34, 27, 61, 77)
+
+# Create the dot plot
+dotchart(xi, main = "Dot Plot for Number of Copiers Serviced (Xi)",
+         xlab = "Number of Copiers Serviced",
+         pch = 19, col = "blue")
+```
+Interpretation.
+From the plot there seem to be no outliers.
+
+Problem 3.4b
+```{r}
+# Data for the number of copiers serviced (Xi)
+xi <- c(20, 60, 46, 41, 12, 137, 68, 89, 4, 32, 144, 156, 93, 36, 72, 100, 105, 131, 
+        127, 57, 66, 101, 109, 74, 134, 112, 18, 73, 111, 96, 123, 90, 20, 28, 3, 57, 
+        86, 132, 112, 27, 131, 34, 27, 61, 77)
+
+# Create a time index representing the order of the cases (1 to 45)
+time_index <- 1:length(xi)
+
+# Plot the time plot (Xi over time)
+plot(time_index, xi, type = "o", pch = 19, col = "blue",
+     xlab = "Time (Case Number)", ylab = "Number of Copiers Serviced",
+     main = "Time Plot for Number of Copiers Serviced")
+
+# Optionally add grid lines for better readability
+grid()
+```
+Interpretation
+1. From the plot it can be seen that cases 6, 11 and 12 have high values of 137, 144, and 156 indicating times where there was high demand of servicing copier machines.
+2. Cases 9 and 35 indicates low values which depicts instance with low demands. 
+
+
+Problem 3.4 d
+```{r}
+# Load the data
+xi <- c(20, 60, 46, 41, 12, 137, 68, 89, 4, 32, 144, 156, 93, 36, 72, 100, 105, 131, 
+        127, 57, 66, 101, 109, 74, 134, 112, 18, 73, 111, 96, 123, 90, 20, 28, 3, 57, 
+        86, 132, 112, 27, 131, 34, 27, 61, 77)
+
+yi <- c(2, 4, 3, 2, 1, 10, 5, 5, 1, 2, 9, 10, 6, 3, 4, 8, 7, 8, 10, 4, 5, 7, 7, 5, 9, 
+        7, 2, 5, 7, 6, 8, 5, 2, 2, 1, 4, 5, 9, 7, 1, 9, 2, 2, 4, 5)
+
+# Fit the linear regression model
+model <- lm(yi ~ xi)
+summary(model)
+
+# Extract residuals and fitted values
+residuals <- resid(model)        # e_i
+fitted_values <- fitted(model)   # Y_hat_i
+
+# Residuals vs. Fitted Values Plot
+plot(fitted_values, residuals, 
+     xlab = "Fitted Values (Y_hat_i)", 
+     ylab = "Residuals (e_i)", 
+     main = "Residuals vs. Fitted Values",
+     pch = 19, col = "blue")
+abline(h = 0, lty = 2)  # Add a horizontal line at residual = 0
+grid()
+
+# Residuals vs. Xi Plot
+plot(xi, residuals, 
+     xlab = "Predictor (Xi)", 
+     ylab = "Residuals (e_i)", 
+     main = "Residuals vs. Predictor (Xi)",
+     pch = 19, col = "red")
+abline(h = 0, lty = 2)  # Add a horizontal line at residual = 0
+grid()
+
+```
+
+Interpretation
+From the two plot it can be seen that they are similar and that provide the same information. 
+It can also be seen that the residuals are randomly scattered around 0 depicting the linearity between X and Y.
+
+Problem 3.4 e
+```{r}
+# Assuming the model from before
+residuals <- resid(model)  # Extract residuals from the regression model
+
+# Create a Q-Q plot of the residuals
+qqnorm(residuals, main = "Normal Probability Plot of Residuals")
+qqline(residuals, col = "red", lwd = 2)  # Add a line through the quartiles
+
+
+# Compute the theoretical quantiles (expected values under normality)
+n <- length(residuals)
+expected_quantiles <- qnorm((1:n - 0.5) / n)
+
+# Compute the correlation between ordered residuals and expected normal quantiles
+correlation_coefficient <- cor(sort(residuals), expected_quantiles)
+print(paste("Correlation Coefficient: ", correlation_coefficient))
+```
+
+Interpretation.
+From Probability plot of residuals it can be seen that the majority of the residuals extracted are centered on and closer to the regression line indicating that the residuals are approximately normal.
+
+Also we have the regression coefficient to be 0.980 which is greater than alpha of 0.10 = 0.955 and for that we fail to reject Ho and conclude that the residuals are normally distributed.
+
+
+Problem 3.4 f
+```{r}
+# Create a time plot of residuals
+plot(residuals, type = "o", main = "Time Plot of Residuals", xlab = "Time (Index of Observations)", ylab = "Residuals")
+abline(h = 0, col = "red")  # Add a horizontal line at 0 for reference
+```
+
+Interpretation
+From the plot it can be seen that the residual exhibit a trend and that shows that the error terms are correlated.
+
+
+Problem 3.4 g
+```{r}
+# Install and load the lmtest package if not already installed
+install.packages("lmtest")
+library(lmtest)
+
+# Perform the Breusch-Pagan test
+bp_test <- bptest(model)
+
+# Display the test result
+print(bp_test)
+```
+
+Interpretation.
+The pvalue of the bptest is 0.2722 which is greater than alpha = 0.05, then we fail to reject Ho and conlude that There is no sufficient evidence to suggest that the error variance varies with the level of X.  Hence, the assumption of constant variance (homoscedasticity) holds for this data.
+
+Problem 3.7 b
+```{r}
+# Step 1: Input the data
+age <- c(43, 41, 47, 46, 45, 41, 47, 41, 48, 48, 42, 47, 43, 44, 42, 55, 57, 56, 59, 57, 
+         54, 53, 52, 53, 54, 60, 59, 51, 59, 57, 68, 63, 60, 63, 63, 64, 66, 65, 60, 65, 
+         65, 69, 61, 70, 68, 78, 78, 78, 72, 70, 73, 76, 78, 78, 71, 75, 77, 76, 72, 76)
+muscle_mass <- c(106, 106, 97, 113, 96, 119, 92, 112, 92, 102, 107, 107, 102, 115, 101, 
+                 87, 91, 97, 82, 78, 95, 98, 94, 96, 100, 84, 70, 104, 76, 93, 73, 73, 76, 
+                 80, 84, 71, 64, 88, 79, 88, 73, 74, 76, 87, 70, 69, 54, 62, 78, 65, 64, 
+                 74, 87, 63, 82, 80, 52, 56, 70, 74)
+
+data1 <- c(age, muscle_mass)
+
+# Step 2: Fit the linear regression model
+model <- lm(muscle_mass ~ age)
+
+# Step 3: Obtain the residuals
+residuals <- resid(model)
+
+# Step 4: Create a dot plot of the residuals
+dotchart(residuals, main = "Dot Plot of Residuals", xlab = "Residuals")
+```
+
+Interpretation
+From the plot it can be seen that there is an outlier.
+
+Problem 3.7 c
+```{r}
+# Step 1: Fit the linear regression model
+model <- lm(muscle_mass ~ age)
+
+# Step 2: Obtain residuals and fitted values
+residuals <- resid(model)  # residuals (e_i)
+fitted_values <- fitted(model)  # fitted values (Y_hat)
+
+# Step 3: Plot residuals vs fitted values
+plot(fitted_values, residuals, 
+     main = "Residuals vs Fitted Values",
+     xlab = "Fitted Values (Y_hat)",
+     ylab = "Residuals (e_i)",
+     pch = 19,
+     col = "blue")
+abline(h = 0, col = "red", lwd = 2)  # add horizontal line at 0
+
+# Step 4: Plot residuals vs predictor (age)
+plot(age, residuals, 
+     main = "Residuals vs Age (X)",
+     xlab = "Age (X_i)",
+     ylab = "Residuals (e_i)",
+     pch = 19,
+     col = "blue")
+abline(h = 0, col = "red", lwd = 2)  # add horizontal line at 0
+```
+Findings
+From the two distinct graphs it can be seen that although the they appear to have similar pattern, they also have outliers at distinct places.
+
+Conclusion
+Since the two plots show random scatter of residuals around zero without any clear patterns, then the assumptions of the regression model (linearity and homoscedasticity) are likely satisfied.
+
+Problem 3.7 d
+```{r}
+library(lmtest)
+# Step 1: Fit the linear regression model
+model <- lm(muscle_mass ~ age)
+
+# Step 2: Extract residuals
+residuals <- resid(model)
+
+# Step 3: Create a normal probability plot (Q-Q plot)
+qqnorm(residuals, main = "Normal Q-Q Plot of Residuals")
+qqline(residuals, col = "red")  # Adds a reference line
+
+# Step 4: Calculate the correlation coefficient
+n <- length(residuals)  # Number of residuals
+sorted_residuals <- sort(residuals)  # Sort residuals in ascending order
+
+# Obtain the theoretical quantiles (expected values under normality)
+theoretical_quantiles <- qnorm((1:n - 0.5) / n)
+
+# Calculate the correlation coefficient between sorted residuals and theoretical quantiles
+correlation_coeff <- cor(sorted_residuals, theoretical_quantiles)
+
+# Step 5: Print the correlation coefficient
+print(paste("Correlation between ordered residuals and normal quantiles:", correlation_coeff))
+```
+
+Interpretation.
+From Probability plot of residuals it can be seen that the majority of the residuals extracted are centered on and closer to the regression line indicating that the residuals are approximately normal.
+
+Also we have the regression coefficient to be 0.9897 which is greater than alpha of 0.10 = 0.984 and for that we fail to reject Ho and conclude that the residuals are normally distributed.
+
+Problem 3.17 a
+```{r}
+# Define the data
+X <- c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+Y <- c(98, 135, 162, 178, 221, 232, 283, 300, 374, 395)
+
+# Create a scatter plot
+plot(X, Y, main = "Scatter Plot of Sales vs Year", 
+     xlab = "Year (Coded)", ylab = "Sales (Thousands of Units)",
+     pch = 19, col = "blue")
+
+# Optionally, add a regression line
+abline(lm(Y ~ X), col = "red", lwd = 2)
+```
+Interpretation
+From the plot, there seem to be a linear relation between X and Y.
+
+Problem 3.17 b
+```{r}
+# Load necessary library
+library(MASS)
+
+# Define the data
+X <- c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+Y <- c(98, 135, 162, 178, 221, 232, 283, 300, 374, 395)
+
+# Fit a linear model
+model <- lm(Y ~ X)
+
+# Perform the Box-Cox transformation
+boxcox_result <- boxcox(model, lambda = seq(-2, 2, 0.1))
+
+# Extract the optimal lambda
+optimal_lambda <- boxcox_result$x[which.max(boxcox_result$y)]
+cat("Optimal Lambda: ", optimal_lambda, "\n")
+```
+Interpretation
+After the transformation, the plot of the model is approximately normal.
+
+Problem 3.17 c
+```{r}
+# Define the data
+X <- c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+Y <- c(98, 135, 162, 178, 221, 232, 283, 300, 374, 395)
+
+# Apply the square root transformation to Y
+Y_transformed <- sqrt(Y)
+
+# Fit the linear regression model for the transformed data
+model <- lm(Y_transformed ~ X)
+
+# Display the summary of the model
+summary(model)
+
+# Obtain the estimated regression coefficients
+intercept <- coef(model)[1]
+slope <- coef(model)[2]
+
+cat("Estimated Linear Regression Function: \n")
+cat("Y_transformed = ", round(intercept, 4), " + ", round(slope, 4), " * X\n")
+```
+
+Interpretation
+From the R output we have the estimated linear regression function: 
+Y_transformed =  10.2609  +  1.0763  * X
+
+
+Problem 3.17 d
+```{r}
+# Create a scatter plot of the transformed data
+plot(X, Y_transformed, pch = 16, col = "blue", 
+     xlab = "X (Year)", ylab = "Transformed Y (sqrt(Y))", 
+     main = "Scatter Plot with Regression Line for Transformed Data")
+
+# Add the estimated regression line to the plot
+abline(model, col = "red", lwd = 2)
+
+# Add a legend to distinguish between the data points and the regression line
+legend("topleft", legend = c("Transformed Data", "Regression Line"),
+       col = c("blue", "red"), pch = c(16, NA), lty = c(NA, 1), lwd = c(NA, 2))
+```
+
+Interpretation
+From the plot it can be seen that the transformation appears to be a good fit as compared to the plot of the original data.
+
+
+Problem 3.17 e
+```{r}
+residuals <- resid(model)
+fitted_values <- fitted(model)
+
+# Plot Residuals vs Fitted Values
+plot(fitted_values, residuals, 
+     xlab = "Fitted Values", ylab = "Residuals", 
+     main = "Residuals vs Fitted Values", pch = 16, col = "blue")
+abline(h = 0, col = "red", lwd = 2)
+
+# Add a legend
+legend("topright", legend = "Residuals", col = "blue", pch = 16)
+
+# Normal Probability Plot (Q-Q Plot) for Residuals
+qqnorm(residuals, main = "Normal Q-Q Plot")
+qqline(residuals, col = "red", lwd = 2)
+
+```
+Interpretation
+Although the two plots do not depict a clear pattern, we can see that from the Q-Q plot the observation are centred around the diagonal line which can approximate the residuals to be normally distributed.
+
+Problem 3.17 f
+We can express original function as Y' = (10.26093 + 1.07629X)2
+
+
+
